@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { App } from "./App";
 import { useWebSocket } from "./hooks/useWebSocket";
 import { useUiStore } from "./store/uiStore";
+import { ToastContainer } from "./components/ui/Toast";
 import "./styles/globals.css";
 
 const qc = new QueryClient({
@@ -14,7 +15,12 @@ const qc = new QueryClient({
 
 function Root() {
   useWebSocket();
-  return <App />;
+  return (
+    <>
+      <App />
+      <ToastContainer />
+    </>
+  );
 }
 
 useUiStore.getState().applyThemeClass();

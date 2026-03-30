@@ -2,6 +2,7 @@ import logging
 import mimetypes
 import os
 from pathlib import Path
+from typing import Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
@@ -31,7 +32,7 @@ def _mime_for_path(file_path: str) -> str:
 async def stream_direct(
     media_id: str,
     session: Session = Depends(get_session),
-    range_header: str | None = Header(None, alias="Range"),
+    range_header: Optional[str] = Header(None, alias="Range"),
 ):
     media = session.get(MediaFile, media_id)
     if not media or media.media_type != "video":

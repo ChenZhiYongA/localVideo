@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="quality_entries">
+        <item>Auto</item>
+        <item>1080p</item>
+        <item>720p</item>
+        <item>480p</item>
+        <item>360p</item>
+    </string-array>
+    <string-array name="quality_values">
+        <item>auto</item>
+        <item>1080</item>
+        <item>720</item>
+        <item>480</item>
+        <item>360</item>
+    </string-array>
+    <string-array name="speed_entries">
+        <item>0.5×</item>
+        <item>0.75×</item>
+        <item>1×</item>
+        <item>1.25×</item>
+        <item>1.5×</item>
+        <item>2×</item>
+    </string-array>
+    <string-array name="speed_values">
+        <item>0.5</item>
+        <item>0.75</item>
+        <item>1.0</item>
+        <item>1.25</item>
+        <item>1.5</item>
+        <item>2.0</item>
+    </string-array>
+</resources>

@@ -1,5 +1,7 @@
 import { ProgressBar } from "./ProgressBar";
 import { VolumeControl } from "./VolumeControl";
+import { SpeedMenu } from "./SpeedMenu";
+import { QualityMenu } from "./QualityMenu";
 
 function fmtTime(t) {
   if (!Number.isFinite(t)) return "0:00";
@@ -29,6 +31,8 @@ export function PlayerControls({
   qualities,
   currentQualityIndex,
   onQuality,
+  speed,
+  onSpeed,
   visible,
 }) {
   return (
@@ -65,23 +69,8 @@ export function PlayerControls({
           {fmtTime(currentTime)} / {fmtTime(duration)}
         </span>
         <div className="ml-auto flex items-center gap-1">
-          {qualities?.length > 0 && (
-            <select
-              className="max-w-[100px] rounded bg-white/10 px-2 py-1 text-xs text-white outline-none"
-              value={currentQualityIndex === -1 ? "auto" : String(currentQualityIndex)}
-              onChange={(e) => {
-                const v = e.target.value;
-                onQuality(v === "auto" ? -1 : Number(v));
-              }}
-            >
-              <option value="auto">自动</option>
-              {qualities.map((q, i) => (
-                <option key={i} value={String(i)}>
-                  {q.height}p
-                </option>
-              ))}
-            </select>
-          )}
+          <SpeedMenu speed={speed} onSpeed={onSpeed} />
+          <QualityMenu qualities={qualities} currentIndex={currentQualityIndex} onQuality={onQuality} />
           {typeof document !== "undefined" && document.pictureInPictureEnabled && (
             <button
               type="button"

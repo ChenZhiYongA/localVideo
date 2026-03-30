@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config import settings
 from database import create_db_and_tables
 from queue_worker import start_workers
-from routers import app_settings, folders, library, scan, stream, telegram, thumbnails, ws
+from routers import app_settings, comments, folders, library, scan, stream, telegram, thumbnails, ws
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -63,4 +63,5 @@ app.include_router(stream.router)
 app.include_router(thumbnails.router)
 app.include_router(app_settings.router)
 app.include_router(telegram.router)
+app.include_router(comments.router)
 app.include_router(ws.router)

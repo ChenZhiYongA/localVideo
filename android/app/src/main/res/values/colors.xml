@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="lt_red">#E53935</color>
+    <color name="lt_red_dark">#C62828</color>
+    <color name="lt_red_light">#EF9A9A</color>
+    <color name="bg_primary">#0F0F0F</color>
+    <color name="bg_surface">#1A1A1A</color>
+    <color name="bg_surface_2">#242424</color>
+    <color name="bg_surface_3">#2E2E2E</color>
+    <color name="text_primary">#F1F1F1</color>
+    <color name="text_secondary">#AAAAAA</color>
+    <color name="text_tertiary">#717171</color>
+    <color name="divider">#1FFFFFFF</color>
+    <color name="bg_primary_light">#FFFFFF</color>
+    <color name="bg_surface_light">#F9F9F9</color>
+    <color name="bg_surface_2_light">#F2F2F2</color>
+    <color name="text_primary_light">#0F0F0F</color>
+    <color name="text_secondary_light">#606060</color>
+    <color name="connected_green">#4CAF50</color>
+    <color name="warning_amber">#FFA726</color>
+    <color name="error_red">#F44336</color>
+    <color name="danmaku_white">#FFFFFFFF</color>
+    <color name="danmaku_yellow">#FFFFFF00</color>
+    <color name="danmaku_cyan">#FF00FFFF</color>
+    <color name="danmaku_shadow">#80000000</color>
+    <color name="progress_red">#E53935</color>
+    <color name="shimmer_base">#1A1A1A</color>
+    <color name="shimmer_highlight">#2E2E2E</color>
+    <color name="transparent">#00000000</color>
+    <color name="scrim_bottom">#CC000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+</resources>

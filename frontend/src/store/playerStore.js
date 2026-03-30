@@ -7,9 +7,10 @@ export const usePlayerStore = create((set, get) => ({
   isPlaying: false,
   volume: 1.0,
   muted: false,
+  miniMedia: null,
 
   setCurrentMedia: (media, queue = [], index = 0) =>
-    set({ currentMedia: media, queue, queueIndex: index, isPlaying: true }),
+    set({ currentMedia: media, queue, queueIndex: index, isPlaying: true, miniMedia: null }),
 
   playNext: () => {
     const { queue, queueIndex } = get();
@@ -27,4 +28,7 @@ export const usePlayerStore = create((set, get) => ({
 
   setVolume: (v) => set({ volume: Math.max(0, Math.min(1, v)) }),
   setMuted: (m) => set({ muted: m }),
+
+  setMiniMedia: (media) => set({ miniMedia: media }),
+  closeMini: () => set({ miniMedia: null }),
 }));

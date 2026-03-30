@@ -2,7 +2,7 @@ import html
 import logging
 import os
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from sqlmodel import Session, select
 from telegram import Update
@@ -30,7 +30,7 @@ def _allowed(user_id: int, config: TelegramConfig) -> bool:
     return user_id in ids
 
 
-def _extract_media(update: Update) -> dict[str, Any] | None:
+def _extract_media(update: Update) -> Optional[dict[str, Any]]:
     msg = update.effective_message
     if not msg:
         return None
@@ -161,9 +161,9 @@ async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         return
 
     status_msg = await update.message.reply_text("⏳ 正在接收…")
-    log_id: int | None = None
+    log_id: Optional[int] = None
     saved_path = ""
-    media_id_val: str | None = None
+    media_id_val: Optional[str] = None
 
     try:
         await ws_router.broadcast(
@@ -227,7 +227,7 @@ async def handle_media(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
                     session.add(lg)
                     session.commit()
 
-        ch_mid: int | None = None
+        ch_mid: Optional[int] = None
         with Session(engine) as session:
             cfg_fwd = session.get(TelegramConfig, 1)
         if cfg_fwd and cfg_fwd.forward_to_channel and (cfg_fwd.channel_id or "").strip():

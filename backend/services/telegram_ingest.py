@@ -1,6 +1,7 @@
 import logging
 import os
 from pathlib import Path
+from typing import Optional
 
 from sqlmodel import Session, select
 
@@ -24,7 +25,7 @@ def ensure_watched_folder(session: Session, save_path: str) -> WatchedFolder:
     return row
 
 
-async def scan_path_and_get_media_id(session: Session, folder: WatchedFolder, saved_path: str) -> str | None:
+async def scan_path_and_get_media_id(session: Session, folder: WatchedFolder, saved_path: str) -> Optional[str]:
     norm = os.path.normpath(saved_path)
     try:
         await scan_folder(folder, session, None)

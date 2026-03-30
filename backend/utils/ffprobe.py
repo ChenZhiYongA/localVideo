@@ -2,14 +2,14 @@ import asyncio
 import json
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, Tuple
 
 from config import settings
 
 logger = logging.getLogger(__name__)
 
 
-async def _run_ffprobe(path: str) -> dict[str, Any] | None:
+async def _run_ffprobe(path: str) -> Optional[dict[str, Any]]:
     try:
         proc = await asyncio.create_subprocess_exec(
             settings.ffprobe_path,
@@ -102,7 +102,7 @@ async def can_stream_mp4_direct(file_path: str) -> bool:
     return v_ok and a_ok
 
 
-async def get_image_dimensions(file_path: str) -> tuple[int | None, int | None]:
+async def get_image_dimensions(file_path: str) -> Tuple[Optional[int], Optional[int]]:
     data = await _run_ffprobe(file_path)
     if not data:
         return None, None

@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from telegram import Bot, Update
 
@@ -13,7 +14,7 @@ async def forward_to_channel(
     config,
     saved_path: str,
     media_metadata: dict,
-) -> int | None:
+) -> Optional[int]:
     caption = build_caption(config.caption_template, media_metadata)
     msg = update.effective_message
     if not msg:

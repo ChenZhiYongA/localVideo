@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/homeFragment">
+
+    <fragment
+        android:id="@+id/serverSetupFragment"
+        android:name="com.localtube.android.feature.setup.ServerSetupFragment"
+        android:label="Setup">
+        <action
+            android:id="@+id/action_setup_to_home"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/serverSetupFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="com.localtube.android.feature.home.HomeFragment"
+        android:label="@string/nav_home">
+        <action
+            android:id="@+id/action_home_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/libraryFragment"
+        android:name="com.localtube.android.feature.library.LibraryFragment"
+        android:label="@string/nav_library">
+        <action
+            android:id="@+id/action_library_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/shortsFragment"
+        android:name="com.localtube.android.feature.shorts.ShortsFragment"
+        android:label="@string/nav_shorts">
+        <action
+            android:id="@+id/action_shorts_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/downloadsFragment"
+        android:name="com.localtube.android.feature.downloads.DownloadsFragment"
+        android:label="@string/nav_downloads">
+        <action
+            android:id="@+id/action_downloads_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/playerFragment"
+        android:name="com.localtube.android.feature.player.PlayerFragment"
+        android:label="Player">
+        <argument
+            android:name="mediaId"
+            app:argType="string" />
+        <argument
+            android:name="startFromBeginning"
+            app:argType="boolean"
+            android:defaultValue="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="com.localtube.android.feature.search.SearchFragment"
+        android:label="Search">
+        <argument
+            android:name="query"
+            app:argType="string"
+            android:defaultValue="" />
+        <action
+            android:id="@+id/action_search_to_player"
+            app:destination="@id/playerFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.localtube.android.feature.settings.SettingsFragment"
+        android:label="@string/nav_settings" />
+</navigation>

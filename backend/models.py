@@ -93,3 +93,20 @@ class MediaTag(SQLModel, table=True):
     media_id: str = Field(foreign_key="mediafile.id", index=True)
     tag: str = Field(index=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class Comment(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    media_id: str = Field(index=True)
+    parent_id: Optional[int] = Field(default=None, index=True)
+    author: str = Field(default="用户")
+    content: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+    updated_at: Optional[datetime] = None
+
+
+class Reaction(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    media_id: str = Field(index=True)
+    emoji: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)

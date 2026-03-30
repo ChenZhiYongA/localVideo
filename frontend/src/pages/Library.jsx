@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useLibrary } from "../api/library";
 import { MediaGrid } from "../components/media/MediaGrid";
+import { MediaGridSkeleton } from "../components/ui/Skeleton";
 import { useUiStore } from "../store/uiStore";
 
 const SORT_ORDER_KEYS = new Set([
@@ -140,7 +141,7 @@ export function Library() {
         </div>
       </div>
 
-      {query.isLoading && <p className="text-yt-text-2">加载中…</p>}
+      {query.isLoading && <MediaGridSkeleton count={20} />}
       {query.isError && <p className="text-red-400">加载失败</p>}
       {!query.isLoading && !items.length && <p className="text-yt-text-2">暂无内容，试试扫描或更换筛选。</p>}
 

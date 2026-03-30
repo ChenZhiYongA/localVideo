@@ -2,6 +2,7 @@ import logging
 import os
 from datetime import datetime
 from pathlib import Path
+from typing import Optional
 
 from sqlmodel import Session, select
 
@@ -14,7 +15,7 @@ from utils.hash_utils import stable_media_id
 logger = logging.getLogger(__name__)
 
 
-def _classify_media(ext: str) -> str | None:
+def _classify_media(ext: str) -> Optional[str]:
     if is_video(ext):
         return "video"
     if is_image(ext):

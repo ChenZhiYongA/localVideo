@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory android:title="Server">
+        <EditTextPreference
+            android:key="server_url"
+            android:title="@string/server_url"
+            android:defaultValue="http://192.168.1.100:8000"
+            app:useSimpleSummaryProvider="true" />
+        <Preference
+            android:key="test_connection"
+            android:title="@string/test_connection" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Playback">
+        <ListPreference
+            android:key="default_quality"
+            android:title="Default Quality"
+            android:entries="@array/quality_entries"
+            android:entryValues="@array/quality_values"
+            android:defaultValue="auto"
+            app:useSimpleSummaryProvider="true" />
+        <SwitchPreferenceCompat
+            android:key="autoplay_next"
+            android:title="Autoplay next"
+            android:defaultValue="true" />
+        <SwitchPreferenceCompat
+            android:key="remember_position"
+            android:title="Remember playback position"
+            android:defaultValue="true" />
+        <SwitchPreferenceCompat
+            android:key="danmaku_enabled"
+            android:title="Danmaku enabled"
+            android:defaultValue="true" />
+        <SeekBarPreference
+            android:key="danmaku_opacity"
+            android:title="Danmaku opacity"
+            android:defaultValue="80"
+            android:max="100"
+            app:min="20" />
+        <ListPreference
+            android:key="playback_speed"
+            android:title="@string/playback_speed"
+            android:entries="@array/speed_entries"
+            android:entryValues="@array/speed_values"
+            android:defaultValue="1.0"
+            app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Downloads">
+        <SwitchPreferenceCompat
+            android:key="wifi_only"
+            android:title="@string/wifi_only"
+            android:defaultValue="true" />
+        <SeekBarPreference
+            android:key="max_concurrent"
+            android:title="Max concurrent downloads"
+            android:defaultValue="1"
+            android:max="3"
+            app:min="1" />
+        <Preference
+            android:key="storage_used"
+            android:title="@string/storage_used"
+            android:selectable="false" />
+        <Preference
+            android:key="clear_downloads"
+            android:title="@string/clear_downloads" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Cache">
+        <Preference
+            android:key="clear_image_cache"
+            android:title="@string/clear_cache" />
+        <Preference
+            android:key="clear_watch_history"
+            android:title="@string/clear_history" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="About">
+        <Preference
+            android:key="version"
+            android:title="@string/version"
+            android:selectable="false" />
+        <Preference
+            android:key="backend"
+            android:title="Backend"
+            android:summary="@string/about_backend"
+            android:selectable="false" />
+    </PreferenceCategory>
+</PreferenceScreen>

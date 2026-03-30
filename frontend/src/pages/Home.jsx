@@ -1,11 +1,15 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAddFolder, useFolders } from "../api/folders";
 import { useLibrary } from "../api/library";
 import { EmptyState } from "../components/media/EmptyState";
 import { MediaCard } from "../components/media/MediaCard";
 import { Modal } from "../components/ui/Modal";
 import { Button } from "../components/ui/Button";
+import { MediaGridSkeleton, Skeleton } from "../components/ui/Skeleton";
+import { HeroBanner } from "../components/home/HeroBanner";
+import { MediaRow } from "../components/home/MediaRow";
+import { usePlayerStore } from "../store/playerStore";
 
 function continueItems(videos) {
   return videos.filter((m) => {
@@ -18,42 +22,29 @@ function continueItems(videos) {
 }
 
 const SOURCE_OPTS = [
-  { value: "all", label: "混合" },
+  { value: "all", label: "全部" },
   { value: "local", label: "本地" },
   { value: "telegram", label: "Telegram" },
 ];
 
-function libraryRecommendLink(source) {
-  const qs = new URLSearchParams();
-  qs.set("sort", "recommend");
-  if (source !== "all") qs.set("source", source);
-  return `/library?${qs.toString()}`;
-}
-
-function libraryVideoLink(source) {
-  const qs = new URLSearchParams();
-  qs.set("type", "video");
-  if (source !== "all") qs.set("source", source);
-  return `/library?${qs.toString()}`;
-}
-
 export function Home() {
-  const { data: folders = [] } = useFolders();
+  const { data: folders = [], isLoading: foldersLoading } = useFolders();
   const [sourceFilter, setSourceFilter] = useState("all");
   const recQ = useLibrary({ type: "all", sort: "recommend", per_page: 36, source: sourceFilter });
+  const recentQ = useLibrary({ type: "all", sort: "indexed", per_page: 24, source: sourceFilter });
   const cq = useLibrary({ type: "video", per_page: 100, source: sourceFilter });
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [path, setPath] = useState("");
   const add = useAddFolder();
+  const setMiniMedia = usePlayerStore((s) => s.setMiniMedia);
 
   const recommended = useMemo(() => recQ.data?.pages?.flatMap((p) => p.items) ?? [], [recQ.data]);
+  const recentlyAdded = useMemo(() => recentQ.data?.pages?.flatMap((p) => p.items) ?? [], [recentQ.data]);
   const videos = useMemo(() => cq.data?.pages?.flatMap((p) => p.items) ?? [], [cq.data]);
   const cont = useMemo(() => continueItems(videos), [videos]);
 
-  const openPlayer = (m) => {
-    navigate(`/player/${m.id}`);
-  };
+  const openPlayer = (m) => navigate(`/player/${m.id}`);
 
   const addFolder = async () => {
     if (!path.trim()) return;
@@ -61,6 +52,18 @@ export function Home() {
     setPath("");
     setOpen(false);
   };
+
+  if (foldersLoading) {
+    return (
+      <div className="space-y-8">
+        <Skeleton className="aspect-[21/9] max-h-[420px] w-full rounded-xl" />
+        <div>
+          <Skeleton className="mb-3 h-6 w-32" />
+          <MediaGridSkeleton count={6} />
+        </div>
+      </div>
+    );
+  }
 
   if (!folders.length) {
     return (
@@ -74,9 +77,7 @@ export function Home() {
             placeholder="文件夹路径"
           />
           <div className="flex justify-end gap-2">
-            <Button variant="secondary" onClick={() => setOpen(false)}>
-              取消
-            </Button>
+            <Button variant="secondary" onClick={() => setOpen(false)}>取消</Button>
             <Button onClick={addFolder}>添加</Button>
           </div>
         </Modal>
@@ -85,18 +86,32 @@ export function Home() {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
+      {recommended.length > 0 && <HeroBanner items={recommended.slice(0, 8)} />}
+
+      <div className="flex items-center gap-2">
+        {SOURCE_OPTS.map((o) => (
+          <button
+            key={o.value}
+            type="button"
+            className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+              sourceFilter === o.value
+                ? "bg-yt-text text-yt-bg"
+                : "bg-yt-surface-2 text-yt-text-2 hover:bg-yt-surface-3 hover:text-yt-text"
+            }`}
+            onClick={() => setSourceFilter(o.value)}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+
       {cont.length > 0 && (
         <section>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold">继续观看</h2>
-            <Link to={libraryVideoLink(sourceFilter)} className="text-sm text-yt-red">
-              查看全部
-            </Link>
-          </div>
-          <div className="-mx-1 flex gap-3 overflow-x-auto overscroll-x-contain px-1 pb-2 [-webkit-overflow-scrolling:touch] sm:gap-4">
+          <h2 className="mb-3 text-base font-semibold sm:text-lg">继续观看</h2>
+          <div className="flex gap-3 overflow-x-auto overscroll-x-contain pb-2 hide-scrollbar sm:gap-4">
             {cont.slice(0, 12).map((m) => (
-              <div key={m.id} className="w-[42vw] max-w-[14rem] shrink-0 sm:w-56">
+              <div key={m.id} className="w-[44vw] max-w-[220px] shrink-0 sm:w-52">
                 <MediaCard media={m} onClick={() => openPlayer(m)} />
                 <div className="relative -mt-2 h-1 overflow-hidden rounded bg-yt-surface-3">
                   <div
@@ -112,35 +127,39 @@ export function Home() {
         </section>
       )}
 
-      <section>
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">为你推荐</h2>
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="flex rounded-lg border border-yt-border p-0.5">
-              {SOURCE_OPTS.map((o) => (
-                <button
-                  key={o.value}
-                  type="button"
-                  className={`min-h-[40px] rounded-md px-2.5 py-1.5 text-xs sm:text-sm ${
-                    sourceFilter === o.value ? "bg-yt-surface-2 text-yt-text" : "text-yt-text-2"
-                  }`}
-                  onClick={() => setSourceFilter(o.value)}
-                >
-                  {o.label}
-                </button>
-              ))}
-            </div>
-            <Link to={libraryRecommendLink(sourceFilter)} className="text-sm text-yt-red">
-              查看全部
-            </Link>
+      {recQ.isLoading ? (
+        <div>
+          <Skeleton className="mb-3 h-6 w-32" />
+          <MediaGridSkeleton count={10} />
+        </div>
+      ) : (
+        <MediaRow
+          title="为你推荐"
+          items={recommended.slice(0, 20)}
+          moreLink="/library?sort=recommend"
+          onPlay={openPlayer}
+        />
+      )}
+
+      {recentlyAdded.length > 0 && (
+        <MediaRow
+          title="最近添加"
+          items={recentlyAdded.slice(0, 20)}
+          moreLink="/library?sort=indexed&order=desc"
+          onPlay={openPlayer}
+        />
+      )}
+
+      {recommended.length > 12 && (
+        <section>
+          <h2 className="mb-3 text-base font-semibold sm:text-lg">发现更多</h2>
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+            {recommended.slice(12, 24).map((m) => (
+              <MediaCard key={m.id} media={m} onClick={() => openPlayer(m)} />
+            ))}
           </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
-          {recommended.slice(0, 12).map((m) => (
-            <MediaCard key={m.id} media={m} onClick={() => openPlayer(m)} />
-          ))}
-        </div>
-      </section>
+        </section>
+      )}
     </div>
   );
 }

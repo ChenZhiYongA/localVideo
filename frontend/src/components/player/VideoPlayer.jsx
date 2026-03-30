@@ -15,6 +15,8 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
   const hlsRef = useRef(null);
   const hideTimerRef = useRef(null);
   const progressSaveRef = useRef(null);
+  const tapRef = useRef({ last: 0, x: 0 });
+  const seekIndicatorRef = useRef(null);
 
   const storeVolume = usePlayerStore((s) => s.volume);
   const storeMuted = usePlayerStore((s) => s.muted);
@@ -33,6 +35,8 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
   const [fatalError, setFatalError] = useState("");
   const [qualities, setQualities] = useState([]);
   const [qualityIndex, setQualityIndex] = useState(-1);
+  const [speed, setSpeed] = useState(1);
+  const [seekIndicator, setSeekIndicator] = useState(null);
 
   const volume = storeVolume;
   const muted = storeMuted;
@@ -95,11 +99,7 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
         });
       } else if (v.canPlayType("application/vnd.apple.mpegurl")) {
         v.src = url;
-        v.addEventListener(
-          "loadedmetadata",
-          () => setLoading(false),
-          { once: true }
-        );
+        v.addEventListener("loadedmetadata", () => setLoading(false), { once: true });
       } else {
         setFatalError("不支持 HLS 播放");
         setLoading(false);
@@ -186,6 +186,11 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
     v.volume = volume;
     v.muted = muted;
   }, [volume, muted]);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (v) v.playbackRate = speed;
+  }, [speed]);
 
   useEffect(() => {
     const onFs = () => setFullscreen(!!document.fullscreenElement);
@@ -289,6 +294,38 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
     setStoreVolume(volume + delta);
   };
 
+  const showSeekIndicator = (side, delta) => {
+    setSeekIndicator({ side, delta });
+    if (seekIndicatorRef.current) clearTimeout(seekIndicatorRef.current);
+    seekIndicatorRef.current = setTimeout(() => setSeekIndicator(null), 600);
+  };
+
+  const handleVideoClick = (e) => {
+    const now = Date.now();
+    const tap = tapRef.current;
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (!rect) { togglePlay(); return; }
+
+    const x = e.clientX - rect.left;
+    const isLeft = x < rect.width * 0.35;
+    const isRight = x > rect.width * 0.65;
+
+    if (now - tap.last < 350 && (isLeft || isRight)) {
+      const delta = isLeft ? -10 : 10;
+      onSkip(delta);
+      showSeekIndicator(isLeft ? "left" : "right", delta);
+      tap.last = 0;
+    } else {
+      tap.last = now;
+      tap.x = x;
+      setTimeout(() => {
+        if (tapRef.current.last === now) {
+          togglePlay();
+        }
+      }, 350);
+    }
+  };
+
   const onKeyDown = (e) => {
     const v = videoRef.current;
     if (!v) return;
@@ -326,6 +363,16 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
     } else if (e.key === "]") {
       e.preventDefault();
       playNext();
+    } else if (e.key === ">" || e.key === ".") {
+      e.preventDefault();
+      const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+      const idx = speeds.indexOf(speed);
+      if (idx < speeds.length - 1) setSpeed(speeds[idx + 1]);
+    } else if (e.key === "<" || e.key === ",") {
+      e.preventDefault();
+      const speeds = [0.5, 0.75, 1, 1.25, 1.5, 2];
+      const idx = speeds.indexOf(speed);
+      if (idx > 0) setSpeed(speeds[idx - 1]);
     }
   };
 
@@ -365,12 +412,25 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
           ref={videoRef}
           className="h-full w-full"
           playsInline
-          onClick={togglePlay}
+          onClick={handleVideoClick}
           onTimeUpdate={onTimeUpdate}
           onPlay={onPlay}
           onPause={onPause}
           onEnded={onVideoEnded}
         />
+      )}
+
+      {seekIndicator && (
+        <div
+          className={`pointer-events-none absolute top-1/2 z-30 flex -translate-y-1/2 animate-fade-in items-center gap-1 rounded-full bg-black/60 px-4 py-2 text-white ${
+            seekIndicator.side === "left" ? "left-8" : "right-8"
+          }`}
+        >
+          <span className="material-icons-round text-xl">
+            {seekIndicator.delta < 0 ? "replay_10" : "forward_10"}
+          </span>
+          <span className="text-sm font-medium">{Math.abs(seekIndicator.delta)}秒</span>
+        </div>
       )}
 
       <PlayerOverlay
@@ -400,6 +460,8 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
           qualities={qualities}
           currentQualityIndex={qualityIndex}
           onQuality={onQuality}
+          speed={speed}
+          onSpeed={(s) => setSpeed(s)}
           visible={showControls || !playing || !fullscreen}
         />
       )}

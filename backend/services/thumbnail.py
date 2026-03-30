@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from pathlib import Path
+from typing import Optional
 
 from PIL import Image, ImageOps
 
@@ -8,7 +9,7 @@ from config import settings
 
 logger = logging.getLogger(__name__)
 
-_placeholder_jpeg: bytes | None = None
+_placeholder_jpeg: Optional[bytes] = None
 
 
 def placeholder_jpeg_bytes() -> bytes:

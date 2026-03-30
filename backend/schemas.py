@@ -177,3 +177,38 @@ class TelegramAggregateStats(BaseModel):
     by_type: dict[str, int]
     last_received_at: Optional[str] = None
     success_rate: float
+
+
+class CommentCreate(BaseModel):
+    content: str = Field(..., min_length=1, max_length=2000)
+    author: str = Field(default="用户", max_length=50)
+    parent_id: Optional[int] = None
+
+
+class CommentOut(BaseModel):
+    id: int
+    media_id: str
+    parent_id: Optional[int] = None
+    author: str
+    content: str
+    created_at: str
+    replies: list["CommentOut"] = []
+
+
+class CommentsResponse(BaseModel):
+    items: list[CommentOut]
+    total: int
+
+
+class ReactionToggle(BaseModel):
+    emoji: str = Field(..., min_length=1, max_length=8)
+
+
+class ReactionSummary(BaseModel):
+    emoji: str
+    count: int
+
+
+class ReactionsResponse(BaseModel):
+    items: list[ReactionSummary]
+    total: int

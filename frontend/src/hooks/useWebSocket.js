@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useScanStore } from "../store/scanStore";
+import { toast } from "../store/toastStore";
 
 const WS_PATH = "/ws/progress";
 
@@ -19,6 +20,9 @@ export function useWebSocket() {
   const updateTranscodeProgress = useScanStore((s) => s.updateTranscodeProgress);
   const setScanComplete = useScanStore((s) => s.setScanComplete);
   const clearTranscode = useScanStore((s) => s.clearTranscode);
+  const addTgDownload = useScanStore((s) => s.addTgDownload);
+  const completeTgDownload = useScanStore((s) => s.completeTgDownload);
+  const failTgDownload = useScanStore((s) => s.failTgDownload);
   const reconnectRef = useRef(null);
 
   useEffect(() => {
@@ -52,16 +56,25 @@ export function useWebSocket() {
             qc.invalidateQueries({ queryKey: ["library-stats"] });
             qc.invalidateQueries({ queryKey: ["scan-status"] });
           }
-          if (
-            msg.type === "bot_online" ||
-            msg.type === "bot_offline" ||
-            msg.type === "bot_download_start" ||
-            msg.type === "bot_download_done" ||
-            msg.type === "bot_download_failed"
-          ) {
-            qc.invalidateQueries({ queryKey: ["telegram-config"] });
+          if (msg.type === "bot_download_start") {
+            addTgDownload(msg.data);
+            toast.info(`正在接收: ${msg.data?.filename || "文件"}`);
+          }
+          if (msg.type === "bot_download_done") {
+            completeTgDownload(msg.data?.filename);
+            toast.success(`已保存: ${msg.data?.filename || "文件"}`);
             qc.invalidateQueries({ queryKey: ["telegram-logs"] });
             qc.invalidateQueries({ queryKey: ["telegram-stats"] });
+            qc.invalidateQueries({ queryKey: ["library"] });
+          }
+          if (msg.type === "bot_download_failed") {
+            failTgDownload(msg.data?.filename);
+            toast.error(`接收失败: ${msg.data?.filename || "文件"}`);
+            qc.invalidateQueries({ queryKey: ["telegram-logs"] });
+            qc.invalidateQueries({ queryKey: ["telegram-stats"] });
+          }
+          if (msg.type === "bot_online" || msg.type === "bot_offline") {
+            qc.invalidateQueries({ queryKey: ["telegram-config"] });
           }
         } catch {
           /* ignore */
@@ -93,5 +106,5 @@ export function useWebSocket() {
         /* */
       }
     };
-  }, [qc, updateScanProgress, updateTranscodeProgress, setScanComplete, clearTranscode]);
+  }, [qc, updateScanProgress, updateTranscodeProgress, setScanComplete, clearTranscode, addTgDownload, completeTgDownload, failTgDownload]);
 }

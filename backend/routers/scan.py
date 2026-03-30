@@ -63,7 +63,7 @@ async def _run_scan(folder_id: Optional[int]) -> None:
 
 @router.post("")
 async def trigger_scan(
-    body: ScanBody | None = Body(default=None),
+    body: Optional[ScanBody] = Body(default=None),
     session: Session = Depends(get_session),
 ):
     if state.scanning:

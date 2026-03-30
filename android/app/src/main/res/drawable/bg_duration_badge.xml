@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#CC000000" />
+    <corners android:radius="@dimen/duration_badge_radius" />
+    <padding
+        android:left="@dimen/duration_badge_padding_h"
+        android:right="@dimen/duration_badge_padding_h"
+        android:top="@dimen/duration_badge_padding_v"
+        android:bottom="@dimen/duration_badge_padding_v" />
+</shape>

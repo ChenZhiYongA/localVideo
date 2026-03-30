@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/action_quality" android:title="@string/quality_selector" />
+    <item android:id="@+id/action_speed" android:title="@string/playback_speed" />
+    <item android:id="@+id/action_pip" android:title="@string/picture_in_picture" />
+    <item android:id="@+id/action_download" android:title="@string/download" />
+    <item android:id="@+id/action_share" android:title="@string/share" />
+</menu>

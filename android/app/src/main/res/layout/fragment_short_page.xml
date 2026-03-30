@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black">
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:resize_mode="zoom"
+        app:use_controller="false" />
+
+    <FrameLayout
+        android:id="@+id/danmakuContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="160dp"
+        android:background="@drawable/bg_gradient_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/actionButtons"
+        android:layout_width="56dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_sm"
+        android:layout_marginBottom="100dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnFavorite"
+            android:layout_width="@dimen/shorts_action_icon"
+            android:layout_height="@dimen/shorts_action_icon"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_favorite_border"
+            app:tint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/btnComment"
+            android:layout_width="@dimen/shorts_action_icon"
+            android:layout_height="@dimen/shorts_action_icon"
+            android:layout_marginTop="@dimen/shorts_action_spacing"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_comment"
+            app:tint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/btnShareShort"
+            android:layout_width="@dimen/shorts_action_icon"
+            android:layout_height="@dimen/shorts_action_icon"
+            android:layout_marginTop="@dimen/shorts_action_spacing"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_share"
+            app:tint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/btnDownloadShort"
+            android:layout_width="@dimen/shorts_action_icon"
+            android:layout_height="@dimen/shorts_action_icon"
+            android:layout_marginTop="@dimen/shorts_action_spacing"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_download"
+            app:tint="@color/white" />
+
+        <ImageButton
+            android:id="@+id/btnDanmakuToggle"
+            android:layout_width="@dimen/shorts_action_icon"
+            android:layout_height="@dimen/shorts_action_icon"
+            android:layout_marginTop="@dimen/shorts_action_spacing"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_danmaku"
+            app:tint="@color/white" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomInfo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_lg"
+        android:layout_marginEnd="72dp"
+        android:layout_marginBottom="@dimen/spacing_xxl"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:id="@+id/tvPath"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/text_secondary"
+            android:textSize="13sp" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
+        android:progressTint="@color/lt_red"
+        android:progressBackgroundTint="@color/text_tertiary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

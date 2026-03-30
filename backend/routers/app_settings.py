@@ -1,5 +1,6 @@
 import logging
 import shutil
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
@@ -14,9 +15,9 @@ router = APIRouter(prefix="/api/settings", tags=["settings"])
 
 
 class FFmpegPatch(BaseModel):
-    preset: str | None = None
-    crf: str | None = None
-    transcode_concurrency: int | None = Field(None, ge=1, le=4)
+    preset: Optional[str] = None
+    crf: Optional[str] = None
+    transcode_concurrency: Optional[int] = Field(None, ge=1, le=4)
 
 
 @router.post("/clear-hls")

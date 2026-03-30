@@ -1,0 +1,11 @@
+-keep class com.localtube.android.data.remote.dto.** { *; }
+-keep class androidx.media3.** { *; }
+-dontwarn androidx.media3.**
+-keep class master.flame.danmaku.** { *; }
+-keep class com.bumptech.glide.** { *; }
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.google.gson.** { *; }
+-keep class com.squareup.okhttp3.** { *; }
+-dontwarn com.squareup.okhttp3.**
+-dontwarn okio.**

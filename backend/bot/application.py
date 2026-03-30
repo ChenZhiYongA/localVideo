@@ -1,4 +1,5 @@
 import logging
+from typing import Optional
 
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 
@@ -9,7 +10,7 @@ from bot.handlers.media_handler import handle_media
 logger = logging.getLogger(__name__)
 
 
-def build_bot_application(token: str, base_url: str | None = None) -> Application:
+def build_bot_application(token: str, base_url: Optional[str] = None) -> Application:
     b = Application.builder().token(token)
     if base_url:
         b = b.base_url(base_url.rstrip("/") + "/")
