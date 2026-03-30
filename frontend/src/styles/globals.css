@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --yt-bg: #0f0f0f;
+  --yt-surface: #212121;
+  --yt-surface-2: #2d2d2d;
+  --yt-surface-3: #3d3d3d;
+  --yt-text: #f1f1f1;
+  --yt-text-2: #aaaaaa;
+  --yt-text-3: #717171;
+  --yt-red: #ff0000;
+  --yt-red-dark: #cc0000;
+  --yt-border: rgba(255, 255, 255, 0.08);
+  --yt-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-w: 240px;
+  --topbar-h: 56px;
+  font-family: "Outfit", "Inter", system-ui, sans-serif;
+}
+
+.light {
+  --yt-bg: #ffffff;
+  --yt-surface: #f9f9f9;
+  --yt-surface-2: #f2f2f2;
+  --yt-surface-3: #e5e5e5;
+  --yt-text: #0f0f0f;
+  --yt-text-2: #606060;
+  --yt-text-3: #909090;
+  --yt-border: rgba(0, 0, 0, 0.1);
+  --yt-hover: rgba(0, 0, 0, 0.05);
+}
+
+body {
+  background: var(--yt-bg);
+  color: var(--yt-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--yt-surface-3);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--yt-text-3);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in {
+  animation: fadeInUp 0.2s ease-out;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--yt-surface) 25%,
+    var(--yt-surface-2) 50%,
+    var(--yt-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
