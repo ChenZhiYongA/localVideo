@@ -31,7 +31,7 @@ export function MediaGrid({ items, onSelect, search, viewMode, fetchNextPage, ha
 
   return (
     <>
-      <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6">
         {items.map((m) => (
           <MediaCard key={m.id} media={m} onClick={() => onSelect(m)} viewMode="grid" search={search} />
         ))}

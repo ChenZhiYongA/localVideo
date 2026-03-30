@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./client";
 
@@ -59,6 +60,32 @@ export function useMediaItem(id) {
   });
 }
 
+export function useMediaTags(id) {
+  return useQuery({
+    queryKey: ["media-tags", id],
+    queryFn: async () => {
+      const { data } = await api.get(`/media/${id}/tags`);
+      return data;
+    },
+    enabled: !!id,
+  });
+}
+
+export function useUpdateMediaTags() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ id, tags }) => {
+      const { data } = await api.put(`/media/${id}/tags`, { tags });
+      return data;
+    },
+    onSuccess: (_, vars) => {
+      qc.invalidateQueries({ queryKey: ["media-tags", vars.id] });
+      qc.invalidateQueries({ queryKey: ["media", vars.id] });
+      qc.invalidateQueries({ queryKey: ["library"] });
+    },
+  });
+}
+
 export function useRecordPlay() {
   const qc = useQueryClient();
   return useMutation({
@@ -82,6 +109,26 @@ export function useToggleFavorite() {
     },
     onSuccess: (_, id) => {
       qc.invalidateQueries({ queryKey: ["media", id] });
+      qc.invalidateQueries({ queryKey: ["library"] });
+    },
+  });
+}
+
+export function useReportWatchProgress() {
+  const qc = useQueryClient();
+  const lastInv = useRef(0);
+  return useMutation({
+    mutationFn: async ({ id, deltaSeconds, positionSeconds, durationSeconds }) => {
+      await api.post(`/media/${id}/watch-progress`, {
+        delta_seconds: deltaSeconds,
+        position_seconds: positionSeconds,
+        duration_seconds: durationSeconds,
+      });
+    },
+    onSuccess: () => {
+      const n = Date.now();
+      if (n - lastInv.current < 28000) return;
+      lastInv.current = n;
       qc.invalidateQueries({ queryKey: ["library"] });
     },
   });

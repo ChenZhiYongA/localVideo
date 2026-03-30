@@ -4,6 +4,7 @@ import shutil
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import Session, select
 
 from config import settings
@@ -49,7 +50,11 @@ def add_folder(body: FolderCreate, session: Session = Depends(get_session)) -> W
     name = path.name or path_str
     row = WatchedFolder(path=path_str, name=name)
     session.add(row)
-    session.commit()
+    try:
+        session.commit()
+    except IntegrityError:
+        session.rollback()
+        raise HTTPException(status_code=409, detail="Folder already added") from None
     session.refresh(row)
     return _folder_out(row)
 

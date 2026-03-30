@@ -40,6 +40,10 @@ class MediaItem(BaseModel):
     last_played: Optional[str] = None
     is_favorite: bool
     from_telegram: bool = False
+    watch_time_seconds: int = 0
+    last_position_seconds: Optional[float] = None
+    last_watch_at: Optional[str] = None
+    tags: list[str] = []
 
 
 class WatchedFolderOut(BaseModel):
@@ -80,6 +84,21 @@ class FolderCreate(BaseModel):
 
 class FavoriteResponse(BaseModel):
     is_favorite: bool
+
+
+class WatchProgressIn(BaseModel):
+    delta_seconds: float = Field(0, ge=0, le=120)
+    position_seconds: Optional[float] = Field(None, ge=0)
+    duration_seconds: Optional[float] = Field(None, ge=0)
+
+
+class MediaTagsUpdate(BaseModel):
+    tags: list[str] = Field(default_factory=list, max_length=32)
+
+
+class MediaTagsResponse(BaseModel):
+    media_id: str
+    tags: list[str]
 
 
 class ScanBody(BaseModel):

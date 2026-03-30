@@ -33,7 +33,7 @@ export function PlayerControls({
 }) {
   return (
     <div
-      className={`absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-3 pb-3 pt-8 transition-opacity duration-200 ${
+      className={`absolute bottom-0 left-0 right-0 z-20 bg-gradient-to-t from-black/90 via-black/50 to-transparent px-2 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-8 transition-opacity duration-200 sm:px-3 ${
         visible ? "opacity-100" : "pointer-events-none opacity-0"
       }`}
     >

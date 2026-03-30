@@ -88,7 +88,11 @@ def stream_url_for(m: MediaFile) -> Optional[str]:
 
 
 def media_file_to_item(
-    m: MediaFile, transcode_pct: Optional[float] = None, *, from_telegram: bool = False
+    m: MediaFile,
+    transcode_pct: Optional[float] = None,
+    *,
+    from_telegram: bool = False,
+    tags: Optional[list[str]] = None,
 ) -> MediaItem:
     mt: str = m.media_type if m.media_type in ("video", "image", "audio") else "video"
     pct = transcode_pct
@@ -128,4 +132,8 @@ def media_file_to_item(
         last_played=iso(m.last_played),
         is_favorite=m.is_favorite,
         from_telegram=from_telegram,
+        watch_time_seconds=int(getattr(m, "watch_time_seconds", 0) or 0),
+        last_position_seconds=getattr(m, "last_position_seconds", None),
+        last_watch_at=iso(getattr(m, "last_watch_at", None)),
+        tags=tags or [],
     )

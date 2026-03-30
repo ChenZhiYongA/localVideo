@@ -86,6 +86,11 @@ export function MediaCard({ media, onClick, viewMode = "grid", search = "" }) {
             {media.file_size_formatted}
             {media.modified_relative ? ` · ${media.modified_relative}` : ""}
           </p>
+          {!!media.tags?.length && (
+            <p className="mt-1 line-clamp-1 text-xs text-yt-text-2">
+              {media.tags.slice(0, 2).map((t) => `#${t}`).join(" ")}
+            </p>
+          )}
           {transcodeBadge()}
         </div>
         {(media.media_type === "video" || media.media_type === "audio") && media.duration_formatted && (
@@ -102,6 +107,7 @@ export function MediaCard({ media, onClick, viewMode = "grid", search = "" }) {
       onClick={onClick}
       className="group w-full text-left"
       whileHover={{ scale: 1.03 }}
+      whileTap={{ scale: 0.98 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
     >
       <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-yt-surface-2">
@@ -140,6 +146,11 @@ export function MediaCard({ media, onClick, viewMode = "grid", search = "" }) {
         {media.file_size_formatted}
         {media.modified_relative ? ` · ${media.modified_relative}` : ""}
       </p>
+      {!!media.tags?.length && (
+        <p className="mt-1 line-clamp-1 text-xs text-yt-text-2">
+          {media.tags.slice(0, 2).map((t) => `#${t}`).join(" ")}
+        </p>
+      )}
     </motion.button>
   );
 }

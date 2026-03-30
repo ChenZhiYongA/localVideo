@@ -1,5 +1,6 @@
 import Hls from "hls.js";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useReportWatchProgress } from "../../api/library";
 import { usePlayerStore } from "../../store/playerStore";
 import { PlayerControls } from "./PlayerControls";
 import { PlayerOverlay } from "./PlayerOverlay";
@@ -35,6 +36,9 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
 
   const volume = storeVolume;
   const muted = storeMuted;
+  const reportWatch = useReportWatchProgress();
+  const wallLast = useRef(Date.now());
+  const lsSynced = useRef(false);
 
   const clearHide = () => {
     if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
@@ -138,6 +142,45 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
   }, [mediaItem?.id, mediaItem?.stream_url, mediaItem?.transcode_status]);
 
   useEffect(() => {
+    wallLast.current = Date.now();
+    lsSynced.current = false;
+  }, [mediaItem?.id]);
+
+  useEffect(() => {
+    if (!mediaItem?.id || !playing) return;
+    const tick = setInterval(() => {
+      const v = videoRef.current;
+      if (!v || v.paused) return;
+      const now = Date.now();
+      const dt = (now - wallLast.current) / 1000;
+      wallLast.current = now;
+      if (dt < 5) return;
+      reportWatch.mutate({
+        id: mediaItem.id,
+        deltaSeconds: Math.min(50, dt),
+        positionSeconds: v.currentTime,
+        durationSeconds: v.duration || undefined,
+      });
+    }, 6200);
+    return () => clearInterval(tick);
+  }, [mediaItem?.id, playing, reportWatch]);
+
+  useEffect(() => {
+    if (!mediaItem?.id || !duration || lsSynced.current) return;
+    const raw = localStorage.getItem(progressKey(mediaItem.id));
+    if (!raw) return;
+    const pos = Number(raw);
+    if (pos <= 8) return;
+    lsSynced.current = true;
+    reportWatch.mutate({
+      id: mediaItem.id,
+      deltaSeconds: 0,
+      positionSeconds: pos,
+      durationSeconds: duration || undefined,
+    });
+  }, [mediaItem?.id, duration, reportWatch]);
+
+  useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
     v.volume = volume;
@@ -175,9 +218,32 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
     setPlaying(false);
     setShowControls(true);
     clearHide();
+    const v = videoRef.current;
+    if (v && mediaItem?.id) {
+      const now = Date.now();
+      const dt = (now - wallLast.current) / 1000;
+      wallLast.current = now;
+      if (dt >= 3) {
+        reportWatch.mutate({
+          id: mediaItem.id,
+          deltaSeconds: Math.min(50, dt),
+          positionSeconds: v.currentTime,
+          durationSeconds: v.duration || undefined,
+        });
+      }
+    }
   };
 
   const onVideoEnded = () => {
+    const v = videoRef.current;
+    if (v && mediaItem?.id) {
+      reportWatch.mutate({
+        id: mediaItem.id,
+        deltaSeconds: 0,
+        positionSeconds: v.duration || v.currentTime,
+        durationSeconds: v.duration || undefined,
+      });
+    }
     localStorage.removeItem(progressKey(mediaItem.id));
     setPlaying(false);
     onEnded?.();
@@ -282,12 +348,14 @@ export function VideoPlayer({ mediaItem, onBack, onEnded, className = "" }) {
   return (
     <div
       ref={containerRef}
-      className={`relative aspect-video w-full max-h-[80vh] bg-black ${className}`}
+      className={`relative aspect-video w-full max-h-[min(80vh,100dvh-8rem)] bg-black sm:max-h-[80vh] ${className}`}
       tabIndex={0}
       onKeyDown={onKeyDown}
       onMouseMove={armControls}
       onMouseLeave={scheduleHide}
       onWheel={onWheel}
+      onTouchStart={armControls}
+      onTouchEnd={() => scheduleHide()}
     >
       {!ready && mediaItem?.media_type === "video" && (
         <div className="flex h-full items-center justify-center text-yt-text-2">正在转码或排队中…</div>

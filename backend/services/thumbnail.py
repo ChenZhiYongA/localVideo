@@ -8,6 +8,22 @@ from config import settings
 
 logger = logging.getLogger(__name__)
 
+_placeholder_jpeg: bytes | None = None
+
+
+def placeholder_jpeg_bytes() -> bytes:
+    global _placeholder_jpeg
+    if _placeholder_jpeg is None:
+        from io import BytesIO
+
+        w = max(320, settings.thumbnail_width)
+        h = max(180, settings.thumbnail_height)
+        img = Image.new("RGB", (w, h), (36, 36, 36))
+        buf = BytesIO()
+        img.save(buf, "JPEG", quality=50)
+        _placeholder_jpeg = buf.getvalue()
+    return _placeholder_jpeg
+
 
 async def generate_video_thumbnail(media_id: str, file_path: str, duration: float) -> str:
     output_path = settings.thumbnails_dir / f"{media_id}.jpg"

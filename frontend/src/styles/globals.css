@@ -16,6 +16,7 @@
   --yt-hover: rgba(255, 255, 255, 0.05);
   --sidebar-w: 240px;
   --topbar-h: 56px;
+  --topbar-stack: calc(var(--topbar-h) + env(safe-area-inset-top, 0px));
   font-family: "Outfit", "Inter", system-ui, sans-serif;
 }
 
@@ -35,6 +36,13 @@ body {
   background: var(--yt-bg);
   color: var(--yt-text);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+@supports (padding: max(0px)) {
+  .safe-pb {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
 }
 
 ::-webkit-scrollbar {

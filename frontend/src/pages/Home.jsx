@@ -17,34 +17,42 @@ function continueItems(videos) {
   });
 }
 
-const VIDEO_SOURCE_OPTS = [
+const SOURCE_OPTS = [
   { value: "all", label: "混合" },
   { value: "local", label: "本地" },
   { value: "telegram", label: "Telegram" },
 ];
 
+function libraryRecommendLink(source) {
+  const qs = new URLSearchParams();
+  qs.set("sort", "recommend");
+  if (source !== "all") qs.set("source", source);
+  return `/library?${qs.toString()}`;
+}
+
+function libraryVideoLink(source) {
+  const qs = new URLSearchParams();
+  qs.set("type", "video");
+  if (source !== "all") qs.set("source", source);
+  return `/library?${qs.toString()}`;
+}
+
 export function Home() {
   const { data: folders = [] } = useFolders();
-  const [videoSource, setVideoSource] = useState("all");
-  const vq = useLibrary({ type: "video", per_page: 60, source: videoSource });
-  const iq = useLibrary({ type: "image", per_page: 20 });
+  const [sourceFilter, setSourceFilter] = useState("all");
+  const recQ = useLibrary({ type: "all", sort: "recommend", per_page: 36, source: sourceFilter });
+  const cq = useLibrary({ type: "video", per_page: 100, source: sourceFilter });
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [path, setPath] = useState("");
   const add = useAddFolder();
 
-  const videoLibQuery = () => {
-    const s = videoSource === "all" ? "" : `&source=${videoSource}`;
-    return `/library?type=video${s}`;
-  };
-
-  const videos = useMemo(() => vq.data?.pages?.flatMap((p) => p.items) ?? [], [vq.data]);
-  const images = useMemo(() => iq.data?.pages?.flatMap((p) => p.items) ?? [], [iq.data]);
+  const recommended = useMemo(() => recQ.data?.pages?.flatMap((p) => p.items) ?? [], [recQ.data]);
+  const videos = useMemo(() => cq.data?.pages?.flatMap((p) => p.items) ?? [], [cq.data]);
   const cont = useMemo(() => continueItems(videos), [videos]);
 
   const openPlayer = (m) => {
-    if (m.media_type === "image") navigate(`/player/${m.id}`);
-    else navigate(`/player/${m.id}`);
+    navigate(`/player/${m.id}`);
   };
 
   const addFolder = async () => {
@@ -82,13 +90,13 @@ export function Home() {
         <section>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold">继续观看</h2>
-            <Link to={videoLibQuery()} className="text-sm text-yt-red">
+            <Link to={libraryVideoLink(sourceFilter)} className="text-sm text-yt-red">
               查看全部
             </Link>
           </div>
-          <div className="flex gap-4 overflow-x-auto pb-2">
+          <div className="-mx-1 flex gap-3 overflow-x-auto overscroll-x-contain px-1 pb-2 [-webkit-overflow-scrolling:touch] sm:gap-4">
             {cont.slice(0, 12).map((m) => (
-              <div key={m.id} className="w-56 shrink-0">
+              <div key={m.id} className="w-[42vw] max-w-[14rem] shrink-0 sm:w-56">
                 <MediaCard media={m} onClick={() => openPlayer(m)} />
                 <div className="relative -mt-2 h-1 overflow-hidden rounded bg-yt-surface-3">
                   <div
@@ -106,49 +114,29 @@ export function Home() {
 
       <section>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-semibold">
-            {videoSource === "telegram"
-              ? "Telegram 视频"
-              : videoSource === "local"
-                ? "本地视频"
-                : "全部视频"}
-          </h2>
+          <h2 className="text-lg font-semibold">为你推荐</h2>
           <div className="flex flex-wrap items-center gap-2">
             <div className="flex rounded-lg border border-yt-border p-0.5">
-              {VIDEO_SOURCE_OPTS.map((o) => (
+              {SOURCE_OPTS.map((o) => (
                 <button
                   key={o.value}
                   type="button"
-                  className={`rounded-md px-2.5 py-1 text-xs sm:text-sm ${
-                    videoSource === o.value ? "bg-yt-surface-2 text-yt-text" : "text-yt-text-2"
+                  className={`min-h-[40px] rounded-md px-2.5 py-1.5 text-xs sm:text-sm ${
+                    sourceFilter === o.value ? "bg-yt-surface-2 text-yt-text" : "text-yt-text-2"
                   }`}
-                  onClick={() => setVideoSource(o.value)}
+                  onClick={() => setSourceFilter(o.value)}
                 >
                   {o.label}
                 </button>
               ))}
             </div>
-            <Link to={videoLibQuery()} className="text-sm text-yt-red">
+            <Link to={libraryRecommendLink(sourceFilter)} className="text-sm text-yt-red">
               查看全部
             </Link>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
-          {videos.slice(0, 10).map((m) => (
-            <MediaCard key={m.id} media={m} onClick={() => openPlayer(m)} />
-          ))}
-        </div>
-      </section>
-
-      <section>
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">全部图片</h2>
-          <Link to="/library?type=image" className="text-sm text-yt-red">
-            查看全部
-          </Link>
-        </div>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-5">
-          {images.slice(0, 10).map((m) => (
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 lg:grid-cols-5">
+          {recommended.slice(0, 12).map((m) => (
             <MediaCard key={m.id} media={m} onClick={() => openPlayer(m)} />
           ))}
         </div>

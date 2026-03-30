@@ -50,6 +50,10 @@ class MediaFile(SQLModel, table=True):
     last_played: Optional[datetime] = None
     is_favorite: bool = Field(default=False)
 
+    watch_time_seconds: int = Field(default=0)
+    last_position_seconds: Optional[float] = None
+    last_watch_at: Optional[datetime] = None
+
 
 class TelegramConfig(SQLModel, table=True):
     id: int = Field(default=1, primary_key=True)
@@ -82,3 +86,10 @@ class TelegramMediaLog(SQLModel, table=True):
     media_id: Optional[str] = None
     status: str = Field(default="pending")
     error_message: Optional[str] = None
+
+
+class MediaTag(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    media_id: str = Field(foreign_key="mediafile.id", index=True)
+    tag: str = Field(index=True)
+    created_at: datetime = Field(default_factory=datetime.utcnow)

@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useMediaItem, useRecordPlay, useToggleFavorite } from "../api/library";
 import { useLibrary } from "../api/library";
+import { AudioPlayerBlock } from "../components/player/AudioPlayerBlock";
 import { VideoPlayer } from "../components/player/VideoPlayer";
 import { ImageViewer } from "../components/image/ImageViewer";
+import { TagEditor } from "../components/media/TagEditor";
 import { usePlayerStore } from "../store/playerStore";
 import { useMemo, useState } from "react";
 import { Spinner } from "../components/ui/Spinner";
@@ -27,7 +29,7 @@ export function Player() {
 
   if (isLoading || !media) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
+      <div className="flex min-h-[100dvh] items-center justify-center bg-yt-bg px-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         <Spinner className="h-12 w-12" />
       </div>
     );
@@ -36,9 +38,9 @@ export function Player() {
   if (media.media_type === "image") {
     const src = `/api/media/${media.id}/file`;
     return (
-      <>
-        <div className="mx-auto max-w-5xl">
-          <button type="button" onClick={onBack} className="mb-4 flex items-center gap-2 text-yt-text-2 hover:text-yt-text">
+      <div className="min-h-[100dvh] bg-yt-bg text-yt-text">
+        <div className="mx-auto max-w-5xl px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 sm:px-4">
+          <button type="button" onClick={onBack} className="mb-4 flex min-h-[44px] items-center gap-2 text-yt-text-2 hover:text-yt-text">
             <span className="material-icons-round">arrow_back</span>
             返回
           </button>
@@ -49,6 +51,7 @@ export function Player() {
             onClick={() => setImgOpen(true)}
           />
           <p className="mt-2 text-lg font-medium">{media.name_no_ext}</p>
+          <TagEditor mediaId={media.id} />
         </div>
         <ImageViewer
           open={imgOpen}
@@ -56,20 +59,23 @@ export function Player() {
           title={media.name_no_ext}
           onClose={() => setImgOpen(false)}
         />
-      </>
+      </div>
     );
   }
 
   if (media.media_type === "audio") {
     const src = `/api/media/${media.id}/file`;
     return (
-      <div className="mx-auto max-w-xl px-4 py-8">
-        <button type="button" onClick={onBack} className="mb-4 flex items-center gap-2 text-yt-text-2 hover:text-yt-text">
-          <span className="material-icons-round">arrow_back</span>
-          返回
-        </button>
-        <audio controls className="w-full" src={src} preload="metadata" />
-        <p className="mt-4 text-lg font-medium">{media.name_no_ext}</p>
+      <div className="min-h-[100dvh] bg-yt-bg text-yt-text">
+        <div className="mx-auto max-w-xl px-4 py-8 pb-[max(2rem,env(safe-area-inset-bottom))]">
+          <button type="button" onClick={onBack} className="mb-4 flex min-h-[44px] items-center gap-2 text-yt-text-2 hover:text-yt-text">
+            <span className="material-icons-round">arrow_back</span>
+            返回
+          </button>
+          <AudioPlayerBlock media={media} src={src} />
+          <p className="mt-4 text-lg font-medium">{media.name_no_ext}</p>
+          <TagEditor mediaId={media.id} />
+        </div>
       </div>
     );
   }
@@ -101,8 +107,8 @@ export function Player() {
   }
 
   return (
-    <div className="min-h-screen bg-black px-4 py-6 text-yt-text">
-      <div className="mx-auto max-w-6xl space-y-6">
+    <div className="min-h-screen min-h-[100dvh] bg-black px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-yt-text sm:px-4 sm:py-6">
+      <div className="mx-auto max-w-6xl space-y-4 sm:space-y-6">
       <VideoPlayer
         mediaItem={media}
         onBack={onBack}
@@ -126,6 +132,7 @@ export function Player() {
           >
             {media.is_favorite ? "取消收藏" : "收藏"}
           </Button>
+          <TagEditor mediaId={media.id} />
         </div>
         <div>
           <h2 className="mb-2 text-sm font-medium text-yt-text-2">接下来</h2>
